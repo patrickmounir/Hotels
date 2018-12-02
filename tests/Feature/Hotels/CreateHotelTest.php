@@ -63,7 +63,7 @@ class CreateHotelTest extends TestCase
 
         $response->assertStatus(401);
 
-        $response->assertJson(['message' => 'Forbidden!']);
+        $response->assertJson(['errors' => 'Forbidden!']);
     }
 
     /**

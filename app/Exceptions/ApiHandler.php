@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Responses\Responder;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class ApiHandler extends ExceptionHandler
@@ -16,6 +18,19 @@ class ApiHandler extends ExceptionHandler
     protected $dontReport = [
         //
     ];
+
+    /**
+     * @var Responder
+     */
+    private $responder;
+
+
+    public function __construct(Container $container, Responder $responder)
+    {
+        parent::__construct($container);
+
+        $this->responder = $responder;
+    }
 
     /**
      * A list of the inputs that are never flashed for validation exceptions.
@@ -52,7 +67,7 @@ class ApiHandler extends ExceptionHandler
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return response()->json(['message' => 'Forbidden!'], 401);
+        return $this->responder->respondWithAuthenticationError();
     }
 
     /**
@@ -64,10 +79,7 @@ class ApiHandler extends ExceptionHandler
      */
     protected function convertValidationExceptionToResponse(\Illuminate\Validation\ValidationException $e, $request)
     {
-        return response()->json([
-            'message' => $e->getMessage(),
-            'errors' => $e->errors(),
-        ], 422);
+        return $this->responder->respondWithValidationError($e->errors());
     }
 
 

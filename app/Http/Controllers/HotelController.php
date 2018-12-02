@@ -4,14 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Hotel;
 use App\Http\Requests\CreateHotelRequest;
+use App\Responses\Responder;
 use App\Transformers\HotelTransformer;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    public function __construct()
+    /**
+     * @var Responder
+     */
+    private $responder;
+
+    public function __construct(Responder $responder)
     {
         $this->middleware(['auth']);
+        $this->responder = $responder;
     }
 
     /**
@@ -25,6 +32,6 @@ class HotelController extends Controller
 
         $transformed = \Fractal::item($hotel, new HotelTransformer())->toArray();
 
-        return response()->json($transformed, 201);
+        return $this->responder->setStatus(201)->respond($transformed);
     }
 }
