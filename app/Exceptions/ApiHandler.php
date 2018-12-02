@@ -55,5 +55,20 @@ class ApiHandler extends ExceptionHandler
         return response()->json(['message' => 'Forbidden!'], 401);
     }
 
+    /**
+     * Create a response object from the given validation exception.
+     *
+     * @param  \Illuminate\Validation\ValidationException  $e
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function convertValidationExceptionToResponse(\Illuminate\Validation\ValidationException $e, $request)
+    {
+        return response()->json([
+            'message' => $e->getMessage(),
+            'errors' => $e->errors(),
+        ], 422);
+    }
+
 
 }
