@@ -34,4 +34,16 @@ class CreateHotelTest extends TestCase
 
         $response->assertJson(\Fractal::item($hotellnDB, new HotelTransformer())->toArray());
     }
+
+    /** @test */
+    function a_guest_cannot_create_hotel()
+    {
+        $hotelData = factory(Hotel::class)->make()->toArray();
+
+        $response = $this->post(route('createHotel'), $hotelData);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(['message' => 'Forbidden!']);
+    }
 }
